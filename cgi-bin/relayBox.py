@@ -5,7 +5,6 @@ bus = smbus.SMBus(1)
 address = 0x04
 numZones = 6	# must be less than 16
 
-
 def allZoneStatus():
 	data = bus.read_byte(address)
 	for z in range(0,numZones):

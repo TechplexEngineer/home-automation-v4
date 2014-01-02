@@ -3,9 +3,9 @@
 
 import relayBox as rb
 
-print "Content-type: text/html"
-print "" #blank line indicates end of headers
-print "<title> Home Heating System API </title>"
+# print "Content-type: text/plain"
+# print "" #blank line indicates end of headers
+# print "<title> Home Heating System API </title>"
 
 def getValidZone():
 	zone = form.getvalue("zone")
@@ -16,19 +16,32 @@ def getValidZone():
 		return zone
 	raise Exception("Invalid zone")
 
+def printUsage():
+	print "Content-type: text/html"
+	print "" #blank line indicates end of headers
+	print "<title> Home Heating System API </title>"
+	print "Usage"
+
 import cgi
 form = cgi.FieldStorage()
 action = form.getvalue("action")
 
 if action == None:
-	print "Documentation to come"
-elif action == "read":
+	printUsage()
+else:
+	action = action.lower()
+if action == "read":
+	fmt = form.getvalue("fmt")
 	zone = getValidZone()
-	if zone == None:
+	if (fmt != None and fmt == "raw"):
+		print rb.bus.read_byte(rb.address)
+	elif zone == None:
 		for z in rb.allZoneStatus():
 			print z
 	else:
 		print rb.zoneStatus(zone)
+elif action == "numzones":
+	print rb.numZones
 elif getValidZone() != None:
 	message = 0
 	if action == "on":
@@ -39,8 +52,12 @@ elif getValidZone() != None:
 	#	assume thermostat and set 0
 
 	message |= getValidZone()
-	print hex(message)
-
-	rb.bus.write_byte(rb.address, message)
+	
+	try:
+		rb.bus.write_byte(rb.address, message)
+		print 1
+	except:
+		print -1
 else:
-	print "Usage"
+	printUsage()
+
