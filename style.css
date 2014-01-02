@@ -1,0 +1,27 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+a {
+  color: #00B7FF;
+}
+.zone_title {
+  font-weight: bold;
+  /*width: 150px;*/
+}
+.circle {
+  width: 15px;
+  height: 15px;
+  background: blue;
+  -moz-border-radius: 50px;
+  -webkit-border-radius: 50px;
+  border-radius: 50px;
+  color: transparent;
+  display: inline-block;
+}
+.circle.on {
+  background: green;
+}
+.circle.off {
+  background: red;
+}

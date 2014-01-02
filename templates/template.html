@@ -1,0 +1,47 @@
+<table>
+	<thead>
+		<th> </th>
+		<th> Zone </th>
+		<th> Status </th>
+		<th> Force/Control </th>
+		<th> Duration </th>
+		<th> Time Remaining </th>
+	</thead>
+	<tbody>
+		{% for zone in data %}
+			{% set idx = zone.num %}
+			<tr class="zone zone_{{idx}}">
+				<td> {{idx}} </td>
+				<td class="zone_title"> {{zone.title}} </td>
+				<td class="zone_status">
+					{% if zone.status == 1 %}
+						<div class="circle on" title="On"></div>
+					{% elseif zone.status == 0 %}
+						<div class="circle off" title="Off"></div>
+					{% else %}
+						<div class="circle" title="Unsure"></div>
+					{% endif %}
+				<td>
+					<input type="radio" name="zone[{{idx}}]" value="On"> On
+					<input type="radio" name="zone[{{idx}}]" value="Off"> Off
+					<input type="radio" name="zone[{{idx}}]" value="Thermostat" checked> Thermostat
+				</td>
+				<td>
+					{% set options = ['--',1,2,4,8,12,'Forever'] %}
+					<select name="duration">
+						{% for hr in options %}
+							{% if hr <= 1 %}
+								<option value="{{hr}}">{{hr}} hour </option> 
+							{# {% elseif typeof hr === 'string' %}
+								<option value="{{hr}}">{{hr}} </option>  #}
+							{% else %}
+								<option value="{{hr}}">{{hr}} hours </option> 
+							{% endif %}
+						{% endfor %}
+					</select>
+				</td>
+				<td> -- </td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
