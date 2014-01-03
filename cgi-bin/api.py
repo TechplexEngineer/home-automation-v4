@@ -1,11 +1,8 @@
 #!/usr/bin/python
-
-
+import cgitb; cgitb.enable() #helps with debugging
+import sys
 import relayBox as rb
-
-# print "Content-type: text/plain"
-# print "" #blank line indicates end of headers
-# print "<title> Home Heating System API </title>"
+import db
 
 def getValidZone():
 	zone = form.getvalue("zone")
@@ -18,9 +15,9 @@ def getValidZone():
 
 def printUsage():
 	print "Content-type: text/html"
-	print "" #blank line indicates end of headers
+	print 
 	print "<title> Home Heating System API </title>"
-	print "Usage"
+	print "@todo Pring Usage Info"
 
 import cgi
 form = cgi.FieldStorage()
@@ -28,6 +25,7 @@ action = form.getvalue("action")
 
 if action == None:
 	printUsage()
+	sys.exit(0)
 else:
 	action = action.lower()
 if action == "read":
@@ -50,6 +48,9 @@ elif getValidZone() != None:
 		message |= 1<<5;
 	# else:
 	#	assume thermostat and set 0
+
+	con = db.DB()
+	con.insertAction((getValidZone(),action))
 
 	message |= getValidZone()
 	

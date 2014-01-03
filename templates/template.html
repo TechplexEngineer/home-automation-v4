@@ -22,9 +22,18 @@
 						<div class="circle" title="Unsure"></div>
 					{% endif %}
 				<td>
-					<input type="radio" name="zone[{{idx}}]" value="On"> On
-					<input type="radio" name="zone[{{idx}}]" value="Off"> Off
-					<input type="radio" name="zone[{{idx}}]" value="Thermostat" checked> Thermostat
+					<input type="radio" name="zone[{{idx}}]" value="on"
+					{% if zone.ctrl == "on"%}
+					 checked
+					{% endif %}> On
+					<input type="radio" name="zone[{{idx}}]" value="off"
+					{% if zone.ctrl == "off"%}
+					 checked
+					{% endif %}> Off
+					<input type="radio" name="zone[{{idx}}]" value="thermostat"
+					{% if zone.ctrl != "on" and zone.ctrl != "off"%}
+					 checked
+					{% endif %}> Thermostat
 				</td>
 				<td>
 					{% set options = ['--',1,2,4,8,12,'Forever'] %}

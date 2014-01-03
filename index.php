@@ -9,15 +9,24 @@ $twig = new Twig_Environment($loader
     'cache' => 'templates/compilation_cache',
 )*/);
 
+$db = new SQLite3('/var/www/db/log.db');
+
 $zones = array(
-array( "title"=>"Master Bed Room", 		"num"=>0, "status"=>-1 ),
-array( "title"=>"Blake's Bed Room", 	"num"=>1, "status"=>-1 ),
-array( "title"=>"First Floor", 			"num"=>2, "status"=>-1 ),
-array( "title"=>"First Floor Radiant", 	"num"=>3, "status"=>-1 ),
-array( "title"=>"Domestic Hot Water", 	"num"=>4, "status"=>-1 ),
-array( "title"=>"Basement Radiant", 	"num"=>5, "status"=>-1 )
+	array( "title"=>"Master Bed Room", 		"num"=>0, "status"=>-1, "ctrl"=>"thermostat" ),
+	array( "title"=>"Blake's Bed Room", 	"num"=>1, "status"=>-1, "ctrl"=>"thermostat" ),
+	array( "title"=>"First Floor", 			"num"=>2, "status"=>-1, "ctrl"=>"thermostat" ),
+	array( "title"=>"First Floor Radiant", 	"num"=>3, "status"=>-1, "ctrl"=>"thermostat" ),
+	array( "title"=>"Domestic Hot Water", 	"num"=>4, "status"=>-1, "ctrl"=>"thermostat" ),
+	array( "title"=>"Basement Radiant", 	"num"=>5, "status"=>-1, "ctrl"=>"thermostat" )
 );
 
+$results = $db->query('SELECT * FROM zone_action GROUP BY zone ORDER BY timestamp');
+while ($row = $results->fetchArray()) {
+	foreach ($zones as $idx => $zone) {
+		if ($zone["num"] == $row['zone'])
+			$zones[$idx]["ctrl"] = $row['action'];
+	}
+}
 ?>
 
 
@@ -29,7 +38,10 @@ array( "title"=>"Basement Radiant", 	"num"=>5, "status"=>-1 )
 		<script type="text/javascript">
 			$(document).ready(function(){
 
-				setInterval(function(){
+
+				//using window.performance.now() i found hthat this function can take 1000-200ms
+				function refreshStatus()
+				{
 					var url = "http://home-automation/cgi-bin/api.py?action=read&fmt=raw"
 					$.get(url, function(data) {
 						for (var i=0; i<6; i++)
@@ -40,27 +52,23 @@ array( "title"=>"Basement Radiant", 	"num"=>5, "status"=>-1 )
 								$('tr.zone_'+i+' td.zone_status .circle').removeClass('on').addClass('off').attr('title','Off')
 						}
 					});
-				}, 2*1000);
-	/*
-				var socket = io.connect(window.location.hostname);
-				socket.on('statusEvt', function (data) {
-					
-					//- console.log(data); 
-					//update the status circles
-				});
-	*/
+				}
+				//as soon as the page is ready, go!
+				refreshStatus();
+				setInterval(refreshStatus, 2*1000);
+
+				//when the user clicks a radio button make the api call to cause action
 				$('input[type="radio"]').on('click', function(){
-					console.log("Click Detected");
+					// console.log("Click Detected");
 					var zone = $(this).attr('name').match(/zone\[(\d)\]/)[1];
 					var action = $(this).val();
-					console.log(zone, action);
+					console.log("Set zone %s to state %s", zone, action);
 					var url = "http://home-automation/cgi-bin/api.py?action="+action+"&zone="+zone
-					console.log("Requesting: ", url);
+					// console.log("Requesting: ", url);
 
 					$.get(url, function(data) {
-						console.log("Response: ",data)
-						//$(".result").html( data );
-						//alert( "Load was performed." );
+						console.log("Response: ",data.replace(/(\n|\r)+$/, '')); //chomp the newline
+						//in theory the response data should be 1 on success
 					});
 				});
 			});

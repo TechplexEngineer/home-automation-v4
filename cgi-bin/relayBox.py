@@ -1,4 +1,3 @@
-import cgitb; cgitb.enable() #helps with debugging
 import smbus
 
 bus = smbus.SMBus(1)
