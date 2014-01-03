@@ -6,7 +6,7 @@ import sys
 
 import os
 if 'GATEWAY_INTERFACE' in os.environ:
-	print ('CGI')
+	print ('Running from CGI. Must be called from command line!')
 	sys.exit(-1)
 # else:
 #     print ('Not CGI. CLI?')
@@ -19,10 +19,10 @@ try:
 	for z in status:
 		con.insertStatus(z)
 except:
-	print -1
+	print "Unable to read zone statuses"
 	sys.exit(-1)
 
-print 1
+# print 1
 sys.exit(1)
 
 

@@ -17,7 +17,11 @@ def printUsage():
 	print "Content-type: text/html"
 	print 
 	print "<title> Home Heating System API </title>"
-	print "@todo Pring Usage Info"
+	print "@todo Print Usage Info"
+
+def printJsonHeader():
+	print "Content-type: application/json"
+	print 
 
 import cgi
 form = cgi.FieldStorage()
@@ -32,7 +36,7 @@ if action == "read":
 	fmt = form.getvalue("fmt")
 	zone = getValidZone()
 	if (fmt != None and fmt == "raw"):
-		print rb.bus.read_byte(rb.address)
+		print rb.getZoneStatus()
 	elif zone == None:
 		for z in rb.allZoneStatus():
 			print z
@@ -40,6 +44,16 @@ if action == "read":
 		print rb.zoneStatus(zone)
 elif action == "numzones":
 	print rb.numZones
+elif action == "temp":
+	printJsonHeader()
+	data = dict()
+	data['internal'] = rb.getInternalTemp();
+	data['tank_top'] = 50;
+	data['tank_mid'] = 50;
+	data['tank_bot'] = 50;
+	data['sens3'] = 50;
+	import json
+	print json.dumps(data)
 elif getValidZone() != None:
 	message = 0
 	if action == "on":
@@ -54,11 +68,11 @@ elif getValidZone() != None:
 
 	message |= getValidZone()
 	
-	try:
-		rb.bus.write_byte(rb.address, message)
-		print 1
-	except:
-		print -1
+	# try:
+	rb.updateZones(message)
+	print 1
+	# except:
+	# 	print -1
 else:
 	printUsage()
 
