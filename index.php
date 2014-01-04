@@ -33,8 +33,8 @@ while ($row = $results->fetchArray()) {
 <html>
 	<head>
 		<title>Heating Control Panel</title>
-		<link rel="stylesheet" href="style.css">
-		<script src="jquery-2.0.3.min.js" type="text/javascript"></script>
+		<link rel="stylesheet" href="media/css/style.css">
+		<script src="media/js/jquery-2.0.3.min.js" type="text/javascript"></script>
 		<script type="text/javascript">
 			$(document).ready(function(){
 
