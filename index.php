@@ -12,19 +12,35 @@ $twig = new Twig_Environment($loader
 $db = new SQLite3('/var/www/db/log.db');
 
 $zones = array(
-	array( "title"=>"Master Bed Room", 		"num"=>0, "status"=>-1, "ctrl"=>"thermostat" ),
-	array( "title"=>"Blake's Bed Room", 	"num"=>1, "status"=>-1, "ctrl"=>"thermostat" ),
-	array( "title"=>"First Floor", 			"num"=>2, "status"=>-1, "ctrl"=>"thermostat" ),
-	array( "title"=>"First Floor Radiant", 	"num"=>3, "status"=>-1, "ctrl"=>"thermostat" ),
-	array( "title"=>"Domestic Hot Water", 	"num"=>4, "status"=>-1, "ctrl"=>"thermostat" ),
-	array( "title"=>"Basement Radiant", 	"num"=>5, "status"=>-1, "ctrl"=>"thermostat" )
+	array( "title"=>"Master Bed Room", 		"num"=>3, "status"=>-1, "ctrl"=>"thermostat", "until"=>"--" ),
+	array( "title"=>"Blake's Bed Room", 	"num"=>2, "status"=>-1, "ctrl"=>"thermostat", "until"=>"--" ),
+	array( "title"=>"First Floor", 			"num"=>4, "status"=>-1, "ctrl"=>"thermostat", "until"=>"--" ),
+	array( "title"=>"First Floor Radiant", 	"num"=>1, "status"=>-1, "ctrl"=>"thermostat", "until"=>"--" ),
+	array( "title"=>"Domestic Hot Water", 	"num"=>5, "status"=>-1, "ctrl"=>"thermostat", "until"=>"--" ),
+	array( "title"=>"Basement Radiant", 	"num"=>0, "status"=>-1, "ctrl"=>"thermostat", "until"=>"--" )
 );
 
-$results = $db->query('SELECT * FROM zone_action GROUP BY zone ORDER BY timestamp');
+$results = $db->query('SELECT * FROM last_zone_action ORDER BY zone');
 while ($row = $results->fetchArray()) {
 	foreach ($zones as $idx => $zone) {
 		if ($zone["num"] == $row['zone'])
+		{
 			$zones[$idx]["ctrl"] = $row['action'];
+			// print $zone["num"] . " | " . $row['action'] . " | " . $row['expiration'] . "\n";
+			if (strcasecmp($row['action'],"thermostat") != 0)
+			{
+				//convert utc time to "localtime"
+				$time = strtotime($row['expiration'].' UTC');
+				$dateInLocal = date("g:i a m/d/y", $time);
+
+				$zones[$idx]["until"] = $dateInLocal;
+			}
+		}
+
+		// print $idx ." ". $row['action']."\n";
+
+		// if (strcasecmp($row['action'],"thermostat") != 0)
+		// 	$zones[$idx]["until"] = $row['expiration'];
 	}
 }
 ?>
@@ -38,8 +54,7 @@ while ($row = $results->fetchArray()) {
 		<script type="text/javascript">
 			$(document).ready(function(){
 
-
-				//using window.performance.now() i found hthat this function can take 1000-200ms
+				//using window.performance.now() I found hthat this function can take 1000-200ms
 				function refreshStatus()
 				{
 					var url = "http://home-automation/cgi-bin/api.py?action=read&fmt=raw"
@@ -49,7 +64,7 @@ while ($row = $results->fetchArray()) {
 							if (data & 1<<i)
 								$('tr.zone_'+i+' td.zone_status .circle').removeClass('off').addClass('on').attr('title','On');
 							else
-								$('tr.zone_'+i+' td.zone_status .circle').removeClass('on').addClass('off').attr('title','Off')
+								$('tr.zone_'+i+' td.zone_status .circle').removeClass('on').addClass('off').attr('title','Off');
 						}
 					});
 				}
@@ -67,8 +82,10 @@ while ($row = $results->fetchArray()) {
 					// console.log("Requesting: ", url);
 
 					$.get(url, function(data) {
-						console.log("Response: ",data.replace(/(\n|\r)+$/, '')); //chomp the newline
+						data = data.replace(/(\n|\r)+$/, '')
+						console.log("Response: ",data); //chomp the newline
 						//in theory the response data should be 1 on success
+						$('tr.zone_'+zone+' td.until').html(data);
 					});
 				});
 			});

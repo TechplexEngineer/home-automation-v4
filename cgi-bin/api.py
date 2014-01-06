@@ -51,7 +51,8 @@ elif action == "temp":
 	data['tank_top'] = 50;
 	data['tank_mid'] = 50;
 	data['tank_bot'] = 50;
-	data['sens3'] = 50;
+	data['boiler_supply'] = 50;
+	data['boiler_return'] = 50;
 	import json
 	print json.dumps(data)
 elif getValidZone() != None:

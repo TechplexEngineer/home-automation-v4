@@ -4,8 +4,8 @@
 		<th> Zone </th>
 		<th> Status </th>
 		<th> Force/Control </th>
-		<th> Duration </th>
-		<th> Time Remaining </th>
+		{# <th> Duration </th> #}
+		<th> Setting active until </th>
 	</thead>
 	<tbody>
 		{% for zone in data %}
@@ -35,21 +35,23 @@
 					 checked
 					{% endif %}> Thermostat
 				</td>
+				{#
 				<td>
 					{% set options = ['--',1,2,4,8,12,'Forever'] %}
 					<select name="duration">
 						{% for hr in options %}
 							{% if hr <= 1 %}
 								<option value="{{hr}}">{{hr}} hour </option> 
-							{# {% elseif typeof hr === 'string' %}
-								<option value="{{hr}}">{{hr}} </option>  #}
+							{-# {% elseif typeof hr === 'string' %}
+								<option value="{{hr}}">{{hr}} </option>  #-}
 							{% else %}
 								<option value="{{hr}}">{{hr}} hours </option> 
 							{% endif %}
 						{% endfor %}
 					</select>
 				</td>
-				<td> -- </td>
+				#}
+				<td class="until"> {{zone.until}} </td>
 			</tr>
 		{% endfor %}
 	</tbody>
