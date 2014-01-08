@@ -65,13 +65,13 @@ elif getValidZone() != None:
 	#	assume thermostat and set 0
 
 	con = db.DB()
-	con.insertAction((getValidZone(),action))
+	exp = con.insertAction((getValidZone(),action))
 
 	message |= getValidZone()
 	
 	# try:
 	rb.updateZones(message)
-	print 1
+	print exp
 	# except:
 	# 	print -1
 else:

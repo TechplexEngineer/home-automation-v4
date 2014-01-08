@@ -25,15 +25,18 @@ while ($row = $results->fetchArray()) {
 	foreach ($zones as $idx => $zone) {
 		if ($zone["num"] == $row['zone'])
 		{
-			$zones[$idx]["ctrl"] = $row['action'];
-			// print $zone["num"] . " | " . $row['action'] . " | " . $row['expiration'] . "\n";
-			if (strcasecmp($row['action'],"thermostat") != 0)
+			if ($row['finished'] != 1)
 			{
-				//convert utc time to "localtime"
-				$time = strtotime($row['expiration'].' UTC');
-				$dateInLocal = date("g:i a m/d/y", $time);
+				$zones[$idx]["ctrl"] = $row['action'];
+				// print $zone["num"] . " | " . $row['action'] . " | " . $row['expiration'] . "\n";
+				if (strcasecmp($row['action'],"thermostat") != 0)
+				{
+					//convert utc time to "localtime"
+					$time = strtotime($row['expiration'].' UTC');
+					$dateInLocal = date("g:i a m/d/y", $time);
 
-				$zones[$idx]["until"] = $dateInLocal;
+					$zones[$idx]["until"] = $dateInLocal;
+				}
 			}
 		}
 
@@ -50,7 +53,8 @@ while ($row = $results->fetchArray()) {
 	<head>
 		<title>Heating Control Panel</title>
 		<link rel="stylesheet" href="media/css/style.css">
-		<script src="media/js/jquery-2.0.3.min.js" type="text/javascript"></script>
+		<script type="text/javascript" src="media/js/jquery-2.0.3.min.js"></script>
+		<script type="text/javascript" src="media/js/moment.min.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function(){
 
@@ -82,14 +86,59 @@ while ($row = $results->fetchArray()) {
 					// console.log("Requesting: ", url);
 
 					$.get(url, function(data) {
-						data = data.replace(/(\n|\r)+$/, '')
-						console.log("Response: ",data); //chomp the newline
-						//in theory the response data should be 1 on success
-						$('tr.zone_'+zone+' td.until').html(data);
+
+						if (action != "thermostat")
+						{
+							data = data.replace(/(\n|\r)+$/, '')
+							console.log("Response: ",data); //chomp the newline
+							var date = moment(data+' UTC');
+							
+							//in theory the response data should be 1 on success
+							$('tr.zone_'+zone+' td.until').html(date.format("h:mm a MM/DD/YY"));
+						}
+						else
+							$('tr.zone_'+zone+' td.until').html("--");
 					});
 				});
 			});
+		</script>
 
+		<script type="text/javascript" src="media/js/jsapi.js"></script>
+		<script type="text/javascript">
+			google.load('visualization', '1', {packages: ['gauge']})
+			App = { };
+		</script>
+		<script type="text/javascript" src="media/js/coffee-script.js"></script>
+		<script type="text/coffeescript" src="media/js/gague.coffee"></script>
+		<script type="text/javascript">
+			
+			$(document).ready(function(){
+				// setTimeout(function(){
+				// 	console.log("time",App)
+				// }, 5000);
+				var handle = setInterval(function(){
+					if (typeof App.Gague != 'undefined')
+					{
+						clearInterval(handle);
+						// console.log(App.Gague);
+						init();
+					}
+				},500);			
+			});
+			function init()
+			{
+				var fred = new App.Gague('Internal','intgague');
+
+				function loadTempData() {
+					url = "http://home-automation/cgi-bin/api.py?action=temp"
+					$.get(url, function (data) {
+						// console.log data
+						fred.update(data.internal)
+					});
+				}
+
+				setInterval(loadTempData, 2*1000)
+			}
 		</script>
 	</head>
 	<body>
@@ -97,7 +146,9 @@ while ($row = $results->fetchArray()) {
 		<?php
 		echo $twig->render('template.html', array("data"=>$zones));
 		?>
-		
+		<h1>Status</h1>
+		<div id="tank"></div>
+		<!-- <div id="intgague"></div> -->
 	</body>
 </html>
 

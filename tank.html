@@ -4,12 +4,14 @@
 		<script type="text/javascript" src="media/js/jquery-2.0.3.min.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function(){
-				/* create and svg canvas */
-				var draw = SVG('canvas')
+				/* create an svg canvas */
+				var draw = SVG('tank')
 
 				var toptemp = '?';
 				var midtemp = '?';
 				var bottemp = '?';
+
+				var colorRed = 'red'
 
 				var width = 100
 				var tankcolor = '#472E26'
@@ -22,9 +24,9 @@
 				draw.rect(4,20).move(15,tankheight+35)
 				draw.rect(4,20).move(100-(15+4),tankheight+35)
 
-				var top = draw.text(toptemp+'\xB0F').center(50,elheight/2).fill('red')
-				var mid = draw.text(midtemp+'\xB0F').center(50,tankheight/2+elheight/2).fill('red')
-				var bot = draw.text(bottemp+'\xB0F').center(50,tankheight+elheight/2-15).fill('red')
+				var top = draw.text(toptemp+'\xB0F').center(width/2,elheight/2).fill(colorRed)
+				var mid = draw.text(midtemp+'\xB0F').center(width/2,tankheight/2+elheight/2).fill(colorRed)
+				var bot = draw.text(bottemp+'\xB0F').center(width/2,tankheight+elheight/2-15).fill(colorRed)
 				
 
 				setInterval(getTemp(), 2*1000);
@@ -33,15 +35,15 @@
 				{
 					var url = "http://home-automation/cgi-bin/api.py?action=temp"
 					$.get(url, function(data) {
-						top.text(data.tank_top+'\xB0F')
-						mid.text(data.tank_mid+'\xB0F')
-						bot.text(data.tank_bot+'\xB0F')
+						top.text(data.tank_top+'\xB0F').center(width/2,elheight/2)
+						mid.text(data.tank_mid+'\xB0F').center(width/2,tankheight/2+elheight/2)
+						bot.text(data.tank_bot+'\xB0F').center(width/2,tankheight+elheight/2-15)
 					});
 				}
 			});
 		</script>
 	</head>
 	<body>
-		<div id="canvas"></div>
+		<div id="tank"></div>
 	</body>
 </html>
