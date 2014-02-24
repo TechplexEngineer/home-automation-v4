@@ -102,13 +102,14 @@ while ($row = $results->fetchArray()) {
 				});
 			});
 		</script>
-
+		<script type="text/javascript" src="media/js/svg.min.js"></script>
 		<script type="text/javascript" src="media/js/jsapi.js"></script>
 		<script type="text/javascript">
 			google.load('visualization', '1', {packages: ['gauge']})
 			App = { };
 		</script>
 		<script type="text/javascript" src="media/js/coffee-script.js"></script>
+		<script type="text/coffeescript" src="media/js/tank.coffee"></script>
 		<script type="text/coffeescript" src="media/js/gague.coffee"></script>
 		<script type="text/javascript">
 			
@@ -117,7 +118,7 @@ while ($row = $results->fetchArray()) {
 				// 	console.log("time",App)
 				// }, 5000);
 				var handle = setInterval(function(){
-					if (typeof App.Gague != 'undefined')
+					if (typeof App.Gague != 'undefined' && typeof App.Tank != 'undefined')
 					{
 						clearInterval(handle);
 						// console.log(App.Gague);
@@ -125,19 +126,21 @@ while ($row = $results->fetchArray()) {
 					}
 				},500);			
 			});
-			function init()
+			function init() // called once Gague has been loaded
 			{
-				var fred = new App.Gague('Internal','intgague');
+				var internalGague = new App.Gague('Internal','intgague');
+				var tankSVG = new App.Tank('tank');
 
 				function loadTempData() {
 					url = "http://home-automation/cgi-bin/api.py?action=temp"
 					$.get(url, function (data) {
 						// console.log data
-						fred.update(data.internal)
+						internalGague.update(data.internal);
+						tankSVG.update(data.tank_top,data.tank_mid,data.tank_bot);
 					});
 				}
 
-				setInterval(loadTempData, 2*1000)
+				setInterval(loadTempData, 2*1000);
 			}
 		</script>
 	</head>
@@ -147,7 +150,7 @@ while ($row = $results->fetchArray()) {
 		echo $twig->render('template.html', array("data"=>$zones));
 		?>
 		<h1>Status</h1>
-		<div id="tank"></div>
+		<div id="tank" class="inline-block"></div>
 		<!-- <div id="intgague"></div> -->
 	</body>
 </html>

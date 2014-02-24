@@ -19,7 +19,7 @@ class App.Gague
 			[0]
 		])
 		if $(@id).length == 0
-			$('body').append('<div id="'+@id+'"></div>')
+			$('body').append('<div id="'+@id+'" class="inline-block"></div>')
 		
 
 		@gague = new google.visualization.Gauge(document.getElementById(@id));

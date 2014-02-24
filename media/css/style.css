@@ -25,3 +25,6 @@ a {
 .circle.off {
   background: red;
 }
+.inline-block {
+  display: inline-block;
+}

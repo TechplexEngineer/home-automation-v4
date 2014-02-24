@@ -20,7 +20,21 @@ def getZoneStatus():
 def updateZones(message):
 	bus.write_byte(arduinoI2CAddy, message)
 
+def c2f(tempc):
+	return round((9.0/5.0 * tempc + 32), 2)
+
 def getInternalTemp():
 	tempc = bus.read_byte(boxTempAddy)
-	tempf = round((9.0/5.0 * tempc + 32), 2)
-	return tempf
+	return c2f(tempc)
+
+def getTopTemp():
+	tempc = bus.read_byte(0x4F)
+	return c2f(tempc)
+
+def getMidTemp():
+	tempc = bus.read_byte(0x4E)
+	return c2f(tempc)
+
+def getBotTemp():
+	tempc = bus.read_byte(0x4D)
+	return c2f(tempc)

@@ -1,47 +1,12 @@
 <html>
 	<head>
-		<script type="text/javascript" src="media/js/svg.min.js"></script>
+		<title>
+			Tank Test
+		</title>
 		<script type="text/javascript" src="media/js/jquery-2.0.3.min.js"></script>
-		<script type="text/javascript">
-			$(document).ready(function(){
-				/* create an svg canvas */
-				var draw = SVG('tank')
-
-				var toptemp = '?';
-				var midtemp = '?';
-				var bottemp = '?';
-
-				var colorRed = 'red'
-
-				var width = 100
-				var tankcolor = '#472E26'
-				/* draw rectangle */
-				var elheight = 50
-				var tankheight = 250
-				draw.rect(width,tankheight).move(0,elheight/2).fill(tankcolor)
-				draw.ellipse(width,elheight).fill(tankcolor)
-				draw.ellipse(width,elheight).move(0,tankheight).fill(tankcolor)
-				draw.rect(4,20).move(15,tankheight+35)
-				draw.rect(4,20).move(100-(15+4),tankheight+35)
-
-				var top = draw.text(toptemp+'\xB0F').center(width/2,elheight/2).fill(colorRed)
-				var mid = draw.text(midtemp+'\xB0F').center(width/2,tankheight/2+elheight/2).fill(colorRed)
-				var bot = draw.text(bottemp+'\xB0F').center(width/2,tankheight+elheight/2-15).fill(colorRed)
-				
-
-				setInterval(getTemp(), 2*1000);
-
-				function getTemp()
-				{
-					var url = "http://home-automation/cgi-bin/api.py?action=temp"
-					$.get(url, function(data) {
-						top.text(data.tank_top+'\xB0F').center(width/2,elheight/2)
-						mid.text(data.tank_mid+'\xB0F').center(width/2,tankheight/2+elheight/2)
-						bot.text(data.tank_bot+'\xB0F').center(width/2,tankheight+elheight/2-15)
-					});
-				}
-			});
-		</script>
+		<script type="text/javascript" src="media/js/svg.min.js"></script>
+		<script type="text/javascript" src="media/js/coffee-script.js"></script>
+		<script type="text/coffeescript" src="media/js/tank.coffee"></script>
 	</head>
 	<body>
 		<div id="tank"></div>

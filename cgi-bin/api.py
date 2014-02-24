@@ -48,9 +48,9 @@ elif action == "temp":
 	printJsonHeader()
 	data = dict()
 	data['internal'] = rb.getInternalTemp();
-	data['tank_top'] = 50;
-	data['tank_mid'] = 50;
-	data['tank_bot'] = 50;
+	data['tank_top'] = rb.getTopTemp();
+	data['tank_mid'] = rb.getMidTemp();
+	data['tank_bot'] = rb.getBotTemp();
 	data['boiler_supply'] = 50;
 	data['boiler_return'] = 50;
 	import json
