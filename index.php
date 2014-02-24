@@ -1,5 +1,7 @@
 <?php
 
+#print_r($_SERVER);
+
 require_once 'Twig/Autoloader.php';
 Twig_Autoloader::register();
 
@@ -61,7 +63,7 @@ while ($row = $results->fetchArray()) {
 				//using window.performance.now() I found hthat this function can take 1000-200ms
 				function refreshStatus()
 				{
-					var url = "http://home-automation/cgi-bin/api.py?action=read&fmt=raw"
+					var url = "/cgi-bin/api.py?action=read&fmt=raw"
 					$.get(url, function(data) {
 						for (var i=0; i<6; i++)
 						{
@@ -82,7 +84,7 @@ while ($row = $results->fetchArray()) {
 					var zone = $(this).attr('name').match(/zone\[(\d)\]/)[1];
 					var action = $(this).val();
 					console.log("Set zone %s to state %s", zone, action);
-					var url = "http://home-automation/cgi-bin/api.py?action="+action+"&zone="+zone
+					var url = "/cgi-bin/api.py?action="+action+"&zone="+zone
 					// console.log("Requesting: ", url);
 
 					$.get(url, function(data) {
@@ -132,7 +134,7 @@ while ($row = $results->fetchArray()) {
 				var tankSVG = new App.Tank('tank');
 
 				function loadTempData() {
-					url = "http://home-automation/cgi-bin/api.py?action=temp"
+					url = "/cgi-bin/api.py?action=temp"
 					$.get(url, function (data) {
 						// console.log data
 						internalGague.update(data.internal);
