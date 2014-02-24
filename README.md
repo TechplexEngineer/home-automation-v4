@@ -30,3 +30,8 @@ Writing one byte to the Arduino causes the status of zones to be toggled. The lo
 
 ### Photos
 Checkout the photos and origional posts on g+ https://plus.google.com/explore/home-automation
+
+### Todos
+[] Add graphs of temperature over time
+[] Add graphs of when zones are on over time
+[] Add a history feature to display when zones were forced On/Off
