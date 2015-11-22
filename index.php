@@ -72,29 +72,28 @@ while ($row = $results->fetchArray()) {
 							else
 								$('tr.zone_'+i+' td.zone_status .circle').removeClass('on').addClass('off').attr('title','Off');
 						}
+					}).always(function(){
+						refreshStatus();
 					});
 				}
 				//as soon as the page is ready, go!
 				refreshStatus();
-				setInterval(refreshStatus, 2*1000);
+				// setInterval(refreshStatus, 5*1000);
 
 				//when the user clicks a radio button make the api call to cause action
 				$('input[type="radio"]').on('click', function(){
-					// console.log("Click Detected");
 					var zone = $(this).attr('name').match(/zone\[(\d)\]/)[1];
 					var action = $(this).val();
 					console.log("Set zone %s to state %s", zone, action);
 					var url = "/cgi-bin/api.py?action="+action+"&zone="+zone
-					// console.log("Requesting: ", url);
 
 					$.get(url, function(data) {
 
 						if (action != "thermostat")
 						{
 							data = data.replace(/(\n|\r)+$/, '')
-							console.log("Response: ",data); //chomp the newline
 							var date = moment(data+' UTC');
-							
+
 							//in theory the response data should be 1 on success
 							$('tr.zone_'+zone+' td.until').html(date.format("h:mm a MM/DD/YY"));
 						}
@@ -114,19 +113,15 @@ while ($row = $results->fetchArray()) {
 		<script type="text/coffeescript" src="media/js/tank.coffee"></script>
 		<script type="text/coffeescript" src="media/js/gague.coffee"></script>
 		<script type="text/javascript">
-			
 			$(document).ready(function(){
-				// setTimeout(function(){
-				// 	console.log("time",App)
-				// }, 5000);
+
 				var handle = setInterval(function(){
 					if (typeof App.Gague != 'undefined' && typeof App.Tank != 'undefined')
 					{
 						clearInterval(handle);
-						// console.log(App.Gague);
 						init();
 					}
-				},500);			
+				},500);
 			});
 			function init() // called once Gague has been loaded
 			{
@@ -136,13 +131,15 @@ while ($row = $results->fetchArray()) {
 				function loadTempData() {
 					url = "/cgi-bin/api.py?action=temp"
 					$.get(url, function (data) {
-						// console.log data
 						internalGague.update(data.internal);
 						tankSVG.update(data.tank_top,data.tank_mid,data.tank_bot);
+					}).always(function () {
+						loadTempData();
 					});
 				}
+				loadTempData();
 
-				setInterval(loadTempData, 2*1000);
+				// setInterval(loadTempData, 5*1000);
 			}
 		</script>
 	</head>
