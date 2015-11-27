@@ -8,7 +8,7 @@ Twig_Autoloader::register();
 $loader = new Twig_Loader_Filesystem('templates');
 $twig = new Twig_Environment($loader
 /*	, array(
-    'cache' => 'templates/compilation_cache',
+	'cache' => 'templates/compilation_cache',
 )*/);
 
 $db = new SQLite3('/var/www/db/log.db');
@@ -102,12 +102,28 @@ while ($row = $results->fetchArray()) {
 							var date = moment(data+' UTC');
 
 							//in theory the response data should be 1 on success
-							$('tr.zone_'+zone+' td.until').html(date.format("h:mm a MM/DD/YY"));
+							$('tr.zone_'+zone+' td.until')
+								.html(date.format("h:mm a MM/DD/YY"))
+								.data('exp', date);
 						}
-						else
+						else {
 							$('tr.zone_'+zone+' td.until').html("--");
+						}
+						console.log("Action Comitted!");
 					});
 				});
+
+				//clear completed intervals
+				setInterval(function(){
+					$('tr.zone td.until').each(function(idx, el){
+						var val = $(el).data('exp');
+						if(val && moment().isAfter(moment(val))) {
+							$(el).data('exp','').html('--');
+							var zone = $(el).parent().find('td:first-child').html().trim();
+							$('[name="zone['+zone+']"][value="thermostat"]').prop('checked',true);
+						}
+					});
+				}, 60*1000);
 			});
 		</script>
 		<script type="text/javascript" src="media/js/svg.min.js"></script>
