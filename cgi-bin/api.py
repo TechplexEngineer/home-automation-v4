@@ -65,7 +65,8 @@ elif getValidZone() != None:
 	#	assume thermostat and set 0
 
 	con = db.DB()
-	exp = con.insertAction((getValidZone(),action))
+	duration = form.getvalue("duration") # in hours
+	exp = con.insertAction(getValidZone(), action, duration)
 
 	message |= getValidZone()
 	

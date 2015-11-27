@@ -60,17 +60,23 @@ class DB:
 
 	# zone_Action is a log of all the actions taken from the control panel
 	# returns the expiration time
-	def insertAction(self, status):
+	def insertAction(self, zone, action, hour):
+		# print "Z:{0} A:{1} H:{2}".format(zone, action, hour)
+		if hour == None:
+			hour = 1;
 		cur = self.con.cursor()
 		a = cur.execute('''
 			INSERT INTO zone_action (zone, action, expiration)
-			VALUES (%d,"%s", (SELECT datetime('now', '1 hours')));
-		'''%status)
+			VALUES ({0},"{1}", (SELECT datetime('now', '{2} hours')));
+		'''.format(zone, action, hour))
 		self.con.commit()
+		# print a.lastrowid
 		cur.execute('''
 			SELECT expiration FROM zone_action WHERE id=%d;
 			'''%(a.lastrowid))
-		return cur.fetchone()['expiration']
+		row = cur.fetchone()
+		# print row
+		return row['expiration']
 		
 
 	# finds unfinished actions which have expired {# and sets their finished flag #}

@@ -84,8 +84,15 @@ while ($row = $results->fetchArray()) {
 				$('input[type="radio"]').on('click', function(){
 					var zone = $(this).attr('name').match(/zone\[(\d)\]/)[1];
 					var action = $(this).val();
+					var duration = $('[name="duration"]').val();
+
+					duration = parseFloat(duration);
+					if (isNaN(duration)) {
+						alert('Invalid duration. Must be a number.');
+						return;
+					}
 					console.log("Set zone %s to state %s", zone, action);
-					var url = "/cgi-bin/api.py?action="+action+"&zone="+zone
+					var url = "/cgi-bin/api.py?action="+action+"&zone="+zone+"&duration="+duration
 
 					$.get(url, function(data) {
 
@@ -145,6 +152,10 @@ while ($row = $results->fetchArray()) {
 	</head>
 	<body>
 		<h1>Home Heating Control</h1>
+		<div class="form-group">
+			<label class="control-label" for="duration">Duration (Hour)</label>
+			<input name="duration" type="text" value="1" class="form-control"/>
+		</div>
 		<?php
 		echo $twig->render('template.html', array("data"=>$zones));
 		?>
