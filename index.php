@@ -127,42 +127,43 @@ while ($row = $results->fetchArray()) {
 			});
 		</script>
 		<script type="text/javascript" src="media/js/svg.min.js"></script>
-		<script type="text/javascript" src="media/js/jsapi.js"></script>
+		<!-- <script type="text/javascript" src="media/js/jsapi.js"></script> -->
 		<script type="text/javascript">
-			google.load('visualization', '1', {packages: ['gauge']})
+			// google.load('visualization', '1', {packages: ['gauge']})
 			App = { };
 		</script>
 		<script type="text/javascript" src="media/js/coffee-script.js"></script>
 		<script type="text/coffeescript" src="media/js/tank.coffee"></script>
-		<script type="text/coffeescript" src="media/js/gague.coffee"></script>
+		<!-- <script type="text/coffeescript" src="media/js/gague.coffee"></script> -->
 		<script type="text/javascript">
 			$(document).ready(function(){
 
 				var handle = setInterval(function(){
-					if (typeof App.Gague != 'undefined' && typeof App.Tank != 'undefined')
+					if (App && App.Tank)
 					{
 						clearInterval(handle);
 						init();
 					}
+					// if the tank code isn't ready yet, try again in half a second or so
 				},500);
 			});
-			function init() // called once Gague has been loaded
+			function init()
 			{
-				var internalGague = new App.Gague('Internal','intgague');
+				// var internalGague = new App.Gague('Internal','intgague');
 				var tankSVG = new App.Tank('tank');
 
 				function loadTempData() {
 					url = "/cgi-bin/api.py?action=temp"
 					$.get(url, function (data) {
-						internalGague.update(data.internal);
+						// internalGague.update(data.internal);
+						$('#intgague').text("Furnace room: " + data.internal + "\xB0F")
 						tankSVG.update(data.tank_top,data.tank_mid,data.tank_bot);
-					}).always(function () {
-						loadTempData();
 					});
 				}
 				loadTempData();
 
-				// setInterval(loadTempData, 5*1000);
+				// update the temp data every 5 seconds
+				setInterval(loadTempData, 5*1000);
 			}
 		</script>
 	</head>
@@ -177,7 +178,7 @@ while ($row = $results->fetchArray()) {
 		?>
 		<h1>Status</h1>
 		<div id="tank" class="inline-block"></div>
-		<!-- <div id="intgague"></div> -->
+		<div id="intgague"></div>
 	</body>
 </html>
 
